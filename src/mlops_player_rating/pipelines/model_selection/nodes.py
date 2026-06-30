@@ -10,7 +10,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import KFold, cross_val_score
+from sklearn.model_selection import GroupKFold, RandomizedSearchCV
 
 from mlops_player_rating.core.modeling import (
     build_model,

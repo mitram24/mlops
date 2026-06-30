@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from mlops_player_rating import utils
+from mlops_player_rating.core import utils
 
 
 def test_normalize_name_handles_spaces_and_slashes():
