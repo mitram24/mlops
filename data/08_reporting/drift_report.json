@@ -1,0 +1,348 @@
+{
+  "n_features": 48,
+  "sample_size": 500,
+  "simulated_drift": false,
+  "psi_threshold": 0.2,
+  "ks_pvalue_threshold": 0.05,
+  "n_drifted": 1,
+  "share_drifted": 0.0208,
+  "dataset_drift": false,
+  "features": [
+    {
+      "feature": "skill_mean",
+      "type": "numeric",
+      "psi": 0.055,
+      "ks_pvalue": 0.4741,
+      "drifted": false
+    },
+    {
+      "feature": "shot_power",
+      "type": "numeric",
+      "psi": 0.0385,
+      "ks_pvalue": 0.4426,
+      "drifted": false
+    },
+    {
+      "feature": "long_passing",
+      "type": "numeric",
+      "psi": 0.0373,
+      "ks_pvalue": 0.4839,
+      "drifted": false
+    },
+    {
+      "feature": "reactions",
+      "type": "numeric",
+      "psi": 0.0371,
+      "ks_pvalue": 0.4643,
+      "drifted": false
+    },
+    {
+      "feature": "bmi",
+      "type": "numeric",
+      "psi": 0.037,
+      "ks_pvalue": 0.0506,
+      "drifted": false
+    },
+    {
+      "feature": "aggression",
+      "type": "numeric",
+      "psi": 0.0356,
+      "ks_pvalue": 0.3048,
+      "drifted": false
+    },
+    {
+      "feature": "jumping",
+      "type": "numeric",
+      "psi": 0.0308,
+      "ks_pvalue": 0.0825,
+      "drifted": false
+    },
+    {
+      "feature": "crossing",
+      "type": "numeric",
+      "psi": 0.0306,
+      "ks_pvalue": 0.756,
+      "drifted": false
+    },
+    {
+      "feature": "strength",
+      "type": "numeric",
+      "psi": 0.0296,
+      "ks_pvalue": 0.5231,
+      "drifted": false
+    },
+    {
+      "feature": "gk_diving",
+      "type": "numeric",
+      "psi": 0.0287,
+      "ks_pvalue": 0.7425,
+      "drifted": false
+    },
+    {
+      "feature": "gk_reflexes",
+      "type": "numeric",
+      "psi": 0.0263,
+      "ks_pvalue": 0.3935,
+      "drifted": false
+    },
+    {
+      "feature": "gk_positioning",
+      "type": "numeric",
+      "psi": 0.0261,
+      "ks_pvalue": 0.8921,
+      "drifted": false
+    },
+    {
+      "feature": "positioning",
+      "type": "numeric",
+      "psi": 0.0253,
+      "ks_pvalue": 0.6787,
+      "drifted": false
+    },
+    {
+      "feature": "acceleration",
+      "type": "numeric",
+      "psi": 0.0247,
+      "ks_pvalue": 0.1435,
+      "drifted": false
+    },
+    {
+      "feature": "age",
+      "type": "numeric",
+      "psi": 0.0225,
+      "ks_pvalue": 0.0397,
+      "drifted": true
+    },
+    {
+      "feature": "goalkeeping_mean",
+      "type": "numeric",
+      "psi": 0.0225,
+      "ks_pvalue": 0.6077,
+      "drifted": false
+    },
+    {
+      "feature": "curve",
+      "type": "numeric",
+      "psi": 0.0217,
+      "ks_pvalue": 0.3589,
+      "drifted": false
+    },
+    {
+      "feature": "heading_accuracy",
+      "type": "numeric",
+      "psi": 0.0207,
+      "ks_pvalue": 0.5473,
+      "drifted": false
+    },
+    {
+      "feature": "interceptions",
+      "type": "numeric",
+      "psi": 0.0207,
+      "ks_pvalue": 0.7025,
+      "drifted": false
+    },
+    {
+      "feature": "dribbling",
+      "type": "numeric",
+      "psi": 0.0188,
+      "ks_pvalue": 0.8978,
+      "drifted": false
+    },
+    {
+      "feature": "gk_kicking",
+      "type": "numeric",
+      "psi": 0.0188,
+      "ks_pvalue": 0.7275,
+      "drifted": false
+    },
+    {
+      "feature": "sliding_tackle",
+      "type": "numeric",
+      "psi": 0.0183,
+      "ks_pvalue": 0.378,
+      "drifted": false
+    },
+    {
+      "feature": "standing_tackle",
+      "type": "numeric",
+      "psi": 0.0174,
+      "ks_pvalue": 0.6928,
+      "drifted": false
+    },
+    {
+      "feature": "gk_handling",
+      "type": "numeric",
+      "psi": 0.0171,
+      "ks_pvalue": 0.9817,
+      "drifted": false
+    },
+    {
+      "feature": "penalties",
+      "type": "numeric",
+      "psi": 0.0169,
+      "ks_pvalue": 0.6503,
+      "drifted": false
+    },
+    {
+      "feature": "short_passing",
+      "type": "numeric",
+      "psi": 0.0167,
+      "ks_pvalue": 0.9217,
+      "drifted": false
+    },
+    {
+      "feature": "height",
+      "type": "numeric",
+      "psi": 0.0165,
+      "ks_pvalue": 0.933,
+      "drifted": false
+    },
+    {
+      "feature": "weight",
+      "type": "numeric",
+      "psi": 0.016,
+      "ks_pvalue": 0.8277,
+      "drifted": false
+    },
+    {
+      "feature": "movement_mean",
+      "type": "numeric",
+      "psi": 0.016,
+      "ks_pvalue": 0.3789,
+      "drifted": false
+    },
+    {
+      "feature": "attacking_mean",
+      "type": "numeric",
+      "psi": 0.0142,
+      "ks_pvalue": 0.9975,
+      "drifted": false
+    },
+    {
+      "feature": "free_kick_accuracy",
+      "type": "numeric",
+      "psi": 0.0136,
+      "ks_pvalue": 0.8689,
+      "drifted": false
+    },
+    {
+      "feature": "marking",
+      "type": "numeric",
+      "psi": 0.013,
+      "ks_pvalue": 0.8783,
+      "drifted": false
+    },
+    {
+      "feature": "finishing",
+      "type": "numeric",
+      "psi": 0.0114,
+      "ks_pvalue": 0.7133,
+      "drifted": false
+    },
+    {
+      "feature": "agility",
+      "type": "numeric",
+      "psi": 0.0113,
+      "ks_pvalue": 0.856,
+      "drifted": false
+    },
+    {
+      "feature": "defending_mean",
+      "type": "numeric",
+      "psi": 0.0101,
+      "ks_pvalue": 0.5487,
+      "drifted": false
+    },
+    {
+      "feature": "mentality_mean",
+      "type": "numeric",
+      "psi": 0.01,
+      "ks_pvalue": 0.7596,
+      "drifted": false
+    },
+    {
+      "feature": "ball_control",
+      "type": "numeric",
+      "psi": 0.0089,
+      "ks_pvalue": 0.9686,
+      "drifted": false
+    },
+    {
+      "feature": "sprint_speed",
+      "type": "numeric",
+      "psi": 0.0086,
+      "ks_pvalue": 0.8418,
+      "drifted": false
+    },
+    {
+      "feature": "long_shots",
+      "type": "numeric",
+      "psi": 0.0066,
+      "ks_pvalue": 0.9998,
+      "drifted": false
+    },
+    {
+      "feature": "vision",
+      "type": "numeric",
+      "psi": 0.0066,
+      "ks_pvalue": 0.9991,
+      "drifted": false
+    },
+    {
+      "feature": "volleys",
+      "type": "numeric",
+      "psi": 0.0062,
+      "ks_pvalue": 0.963,
+      "drifted": false
+    },
+    {
+      "feature": "power_mean",
+      "type": "numeric",
+      "psi": 0.0053,
+      "ks_pvalue": 0.9932,
+      "drifted": false
+    },
+    {
+      "feature": "stamina",
+      "type": "numeric",
+      "psi": 0.0045,
+      "ks_pvalue": 0.994,
+      "drifted": false
+    },
+    {
+      "feature": "balance",
+      "type": "numeric",
+      "psi": 0.0041,
+      "ks_pvalue": 0.8395,
+      "drifted": false
+    },
+    {
+      "feature": "preferred_foot",
+      "type": "categorical",
+      "psi": 0.0,
+      "ks_pvalue": null,
+      "drifted": false
+    },
+    {
+      "feature": "is_goalkeeper",
+      "type": "numeric",
+      "psi": 0.0,
+      "ks_pvalue": 1.0,
+      "drifted": false
+    },
+    {
+      "feature": "attacking_work_rate_ord",
+      "type": "numeric",
+      "psi": 0.0,
+      "ks_pvalue": 1.0,
+      "drifted": false
+    },
+    {
+      "feature": "defensive_work_rate_ord",
+      "type": "numeric",
+      "psi": 0.0,
+      "ks_pvalue": 0.9977,
+      "drifted": false
+    }
+  ]
+}

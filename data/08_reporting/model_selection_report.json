@@ -1,0 +1,27 @@
+{
+  "cv_folds": 5,
+  "scoring": "neg_root_mean_squared_error",
+  "results": [
+    {
+      "model": "hist_gradient_boosting",
+      "cv_rmse_mean": 1.5890387626057485,
+      "cv_rmse_std": 0.0682960628508008
+    },
+    {
+      "model": "random_forest",
+      "cv_rmse_mean": 1.9258729426110832,
+      "cv_rmse_std": 0.07477134325101815
+    },
+    {
+      "model": "linear_regression",
+      "cv_rmse_mean": 3.2914980532634743,
+      "cv_rmse_std": 0.13961060433044256
+    },
+    {
+      "model": "ridge",
+      "cv_rmse_mean": 3.295254294266738,
+      "cv_rmse_std": 0.1409305995206049
+    }
+  ],
+  "champion": "hist_gradient_boosting"
+}

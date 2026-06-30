@@ -1,0 +1,54 @@
+# ---- Secrets (NEVER commit) ----
+APIKEY.txt
+**/credentials.yml
+conf/local/**
+!conf/local/.gitkeep
+
+# ---- Kedro data layers (keep folder structure, ignore generated artefacts) ----
+data/02_intermediate/*
+data/03_primary/*
+data/04_feature/*
+data/05_model_input/*
+data/06_models/*
+data/07_model_output/*
+data/08_reporting/*
+!data/**/.gitkeep
+# Keep the raw dataset so the project is runnable out-of-the-box
+!data/01_raw/player_attributes.csv
+!data/01_raw/player_sample.csv
+
+# Publish selected RESULTS so they're viewable on GitHub without re-running the pipeline.
+!data/08_reporting/*.json
+!data/08_reporting/*.png
+!data/08_reporting/*.html
+!data/07_model_output/predictions.csv
+# Ship the trained model too, so the FastAPI/Docker serving works straight from a clone.
+!data/06_models/champion_model.pkl
+!data/06_models/serving_metadata.json
+!data/06_models/champion_spec.json
+
+# ---- MLflow ----
+mlruns/
+mlartifacts/
+mlflow.db
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env
+
+# ---- Tooling ----
+*.log
+.pytest_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+.ruff_cache/
+.kedro.yml
+session_store.db

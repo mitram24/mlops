@@ -1,0 +1,24 @@
+# Bring the prediction API up with:  docker compose up --build
+# Then open http://localhost:8000/docs
+services:
+  api:
+    build: .
+    image: fifa-player-rating-api:latest
+    container_name: fifa-player-rating-api
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_DIR=/app/data/06_models
+    restart: unless-stopped
+
+  # Optional: MLflow tracking UI over the local file store.
+  # Uncomment and run `docker compose up mlflow` to browse experiments at :5000.
+  # mlflow:
+  #   image: python:3.11-slim
+  #   container_name: mlflow-ui
+  #   working_dir: /app
+  #   volumes:
+  #     - ./mlruns:/app/mlruns
+  #   command: bash -c "pip install mlflow>=2.16.0 && mlflow ui --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:////app/mlflow.db"
+  #   ports:
+  #     - "5000:5000"

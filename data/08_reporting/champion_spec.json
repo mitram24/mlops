@@ -1,0 +1,5 @@
+{
+  "model": "hist_gradient_boosting",
+  "cv_rmse_mean": 1.5938005830782294,
+  "cv_rmse_std": 0.06461454742502126
+}

@@ -1,0 +1,83 @@
+# =====================================================================================
+# Project parameters. One block per pipeline; a single seed is shared via a YAML anchor
+# so the whole project is reproducible from one place.
+# =====================================================================================
+
+random_state: &random_state 42
+
+# --- data_quality -------------------------------------------------------------------
+data_quality:
+  min_rows: 4000
+  min_columns: 40
+  target: overall_rating
+  id_column: id
+  # Allow a small fraction of rows with a missing target (dropped later in cleaning).
+  max_target_missing_fraction: 0.05
+  required_columns:
+    - overall_rating
+    - reactions
+    - short_passing
+    - ball_control
+    - preferred_foot
+    - date
+  ranges:
+    overall_rating: [1, 100]
+    potential: [1, 100]
+    reactions: [1, 100]
+    short_passing: [1, 100]
+    ball_control: [1, 100]
+    height: [140, 220]
+    weight: [80, 280]
+  max_missing_fraction: 0.95
+
+# --- data_cleaning ------------------------------------------------------------------
+cleaning:
+  # Drop rows whose target is missing (cannot train/evaluate on them).
+  drop_null_target: true
+  # Drop snapshots where more than this fraction of skill ratings are missing.
+  max_skill_missing_fraction: 0.5
+
+# --- data_feat_engeneering ----------------------------------------------------------
+feature_engineering:
+  drop_columns: []
+
+# --- data_split ---------------------------------------------------------------------
+split:
+  random_state: *random_state
+  test_size: 0.2
+
+# --- model_selection ----------------------------------------------------------------
+model_selection:
+  random_state: *random_state
+  cv_folds: 5
+  candidates:
+    - linear_regression
+    - ridge
+    - random_forest
+    - hist_gradient_boosting
+
+# --- MLflow (shared by selection + train) -------------------------------------------
+mlflow:
+  # Local SQLite backend -> reproducible *and* supports the Model Registry.
+  tracking_uri: sqlite:///mlflow.db
+  experiment_name: player_rating
+  registered_model_name: fifa_player_rating_model
+
+# --- model_train --------------------------------------------------------------------
+model_train:
+  random_state: *random_state
+  reporting_dir: data/08_reporting
+  shap_sample_size: 150
+  shap_max_display: 20
+
+# --- data_drifts --------------------------------------------------------------------
+drift:
+  random_state: *random_state
+  reporting_dir: data/08_reporting
+  sample_size: 500
+  psi_threshold: 0.2
+  ks_pvalue_threshold: 0.05
+  dataset_drift_share: 0.3
+  # Flip to true to generate a shifted batch for the drift-monitoring example.
+  simulate_drift: false
+  drift_factor: 1.25

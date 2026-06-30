@@ -1,0 +1,125 @@
+{
+  "dataset": "EuropeanSoccerDatabase",
+  "n_rows": 6000,
+  "n_columns": 46,
+  "n_checks": 19,
+  "n_failed_critical": 0,
+  "n_warnings": 0,
+  "passed": true,
+  "checks": [
+    {
+      "name": "non_empty",
+      "level": "critical",
+      "passed": true,
+      "detail": "rows=6000"
+    },
+    {
+      "name": "min_rows",
+      "level": "critical",
+      "passed": true,
+      "detail": "rows=6000 >= 4000"
+    },
+    {
+      "name": "min_columns",
+      "level": "critical",
+      "passed": true,
+      "detail": "cols=46 >= 40"
+    },
+    {
+      "name": "required_columns_present",
+      "level": "critical",
+      "passed": true,
+      "detail": "all present"
+    },
+    {
+      "name": "target_has_values",
+      "level": "critical",
+      "passed": true,
+      "detail": "non_null=5970"
+    },
+    {
+      "name": "target_is_numeric",
+      "level": "critical",
+      "passed": true,
+      "detail": "overall_rating fully numeric where present"
+    },
+    {
+      "name": "target_missing_under_threshold",
+      "level": "warning",
+      "passed": true,
+      "detail": "missing=0.500% <= 5%"
+    },
+    {
+      "name": "target_positive",
+      "level": "critical",
+      "passed": true,
+      "detail": "all overall_rating > 0"
+    },
+    {
+      "name": "id_unique",
+      "level": "critical",
+      "passed": true,
+      "detail": "duplicate ids=0"
+    },
+    {
+      "name": "no_duplicate_rows",
+      "level": "warning",
+      "passed": true,
+      "detail": "duplicate rows=0"
+    },
+    {
+      "name": "range_overall_rating",
+      "level": "warning",
+      "passed": true,
+      "detail": "[1,100] out_of_range=0"
+    },
+    {
+      "name": "range_potential",
+      "level": "warning",
+      "passed": true,
+      "detail": "[1,100] out_of_range=0"
+    },
+    {
+      "name": "range_reactions",
+      "level": "warning",
+      "passed": true,
+      "detail": "[1,100] out_of_range=0"
+    },
+    {
+      "name": "range_short_passing",
+      "level": "warning",
+      "passed": true,
+      "detail": "[1,100] out_of_range=0"
+    },
+    {
+      "name": "range_ball_control",
+      "level": "warning",
+      "passed": true,
+      "detail": "[1,100] out_of_range=0"
+    },
+    {
+      "name": "range_height",
+      "level": "warning",
+      "passed": true,
+      "detail": "[140,220] out_of_range=0"
+    },
+    {
+      "name": "range_weight",
+      "level": "warning",
+      "passed": true,
+      "detail": "[80,280] out_of_range=0"
+    },
+    {
+      "name": "skill_columns_present",
+      "level": "critical",
+      "passed": true,
+      "detail": "33/33 FIFA skill columns present"
+    },
+    {
+      "name": "missing_fraction_under_threshold",
+      "level": "warning",
+      "passed": true,
+      "detail": "ok"
+    }
+  ]
+}

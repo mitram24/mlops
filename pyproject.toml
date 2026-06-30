@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mlops_player_rating"
+version = "0.1.0"
+description = "MLOps proof-of-concept: FIFA player overall-rating prediction on the European Soccer Database (Kedro)."
+readme = "README.md"
+requires-python = ">=3.9"
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+mlops-player-rating = "mlops_player_rating.__main__:main"
+
+[tool.kedro]
+package_name = "mlops_player_rating"
+project_name = "mlops_player_rating"
+kedro_init_version = "0.19.10"
+tools = ["Testing"]
+example_pipeline = "False"
+source_dir = "src"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["src/tests"]
+addopts = """
+--verbose
+"""
+
+[tool.coverage.report]
+fail_under = 0
+show_missing = true
+
+[tool.ruff]
+line-length = 100
+
+[tool.kedro_telemetry]
+project_id = "d8a19f7946d44887addb006f53c4bc4d"

@@ -1,0 +1,92 @@
+# =====================================================================================
+# Data Catalog — one entry per dataset, organised along the Kedro data-engineering layers
+# (01_raw -> 08_reporting). Persisting every intermediate output to disk is what lets the
+# component pipelines run independently (e.g. only `data_drifts` once in production).
+# =====================================================================================
+
+# --- 01_raw -------------------------------------------------------------------------
+player_raw:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/player_attributes.csv
+
+player_sample_raw:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/player_sample.csv
+
+# --- 02_intermediate ----------------------------------------------------------------
+ingested:
+  type: pandas.ParquetDataset
+  filepath: data/02_intermediate/ingested.parquet
+
+# --- 03_primary ---------------------------------------------------------------------
+cleaned:
+  type: pandas.ParquetDataset
+  filepath: data/03_primary/cleaned.parquet
+
+# --- 04_feature (offline feature store) ---------------------------------------------
+model_features:
+  type: pandas.ParquetDataset
+  filepath: data/04_feature/model_features.parquet
+
+feature_metadata:
+  type: json.JSONDataset
+  filepath: data/04_feature/feature_metadata.json
+
+attribute_imputer:
+  type: json.JSONDataset
+  filepath: data/04_feature/attribute_imputer.json
+
+# --- 05_model_input -----------------------------------------------------------------
+X_train:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/x_train.parquet
+X_test:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/x_test.parquet
+y_train:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/y_train.parquet
+y_test:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/y_test.parquet
+
+# --- 06_models ----------------------------------------------------------------------
+champion_spec:
+  type: json.JSONDataset
+  filepath: data/06_models/champion_spec.json
+
+champion_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/champion_model.pkl
+
+serving_metadata:
+  type: json.JSONDataset
+  filepath: data/06_models/serving_metadata.json
+
+# --- 07_model_output ----------------------------------------------------------------
+predictions:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/predictions.csv
+  save_args:
+    index: false
+
+# --- 08_reporting -------------------------------------------------------------------
+data_quality_report:
+  type: json.JSONDataset
+  filepath: data/08_reporting/data_quality_report.json
+
+model_selection_report:
+  type: json.JSONDataset
+  filepath: data/08_reporting/model_selection_report.json
+
+model_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/model_metrics.json
+
+feature_importance:
+  type: json.JSONDataset
+  filepath: data/08_reporting/feature_importance.json
+
+drift_report:
+  type: json.JSONDataset
+  filepath: data/08_reporting/drift_report.json

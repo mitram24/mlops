@@ -1,0 +1,26 @@
+id,player_name,predicted_rating,actual_rating,abs_error
+54832,Felipe Melo,77.23,79.0,1.77
+144577,Przemyslaw Frankowski,59.74,60.0,0.26
+42036,Dejan Lazarevic,69.36,71.0,1.64
+135417,Olafur Ingi Skulason,66.24,67.0,0.76
+14652,Anthony Obodai,61.99,62.0,0.01
+43243,Deyverson,62.87,62.0,0.87
+175695,Valdet Rama,64.32,64.0,0.32
+152590,Romain Bregerie,66.87,67.0,0.13
+43495,Didier Ovono,66.85,67.0,0.15
+25287,Carl Dickinson,64.55,63.0,1.55
+91184,Juergen Saeumel,67.49,68.0,0.51
+76939,Jan Bamert,48.15,48.0,0.15
+138408,Panagiotis Kone,74.35,73.0,1.35
+69346,Hector Rodas,69.1,69.0,0.1
+356,Aaron Wilbraham,50.78,50.0,0.78
+4831,Alberto De la Bella,71.39,72.0,0.61
+158918,Sean O'Hanlon,66.37,67.0,0.63
+129298,Munir El Haddadi,65.82,66.0,0.18
+176217,Vasco Regini,66.91,67.0,0.09
+55922,Fernando Uribe,72.06,72.0,0.06
+85666,Jonathan Cristaldo,73.14,73.0,0.14
+65254,Glenn Loovens,68.86,69.0,0.14
+45156,Divock Origi,73.79,75.0,1.21
+93102,Kamil Pozniak,54.16,54.0,0.16
+182834,Yuya Kubo,68.84,69.0,0.16

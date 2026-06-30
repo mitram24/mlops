@@ -1,0 +1,89 @@
+{
+  "method": "shap",
+  "top_features": [
+    {
+      "feature": "ball_control",
+      "importance": 1.1954478439858063
+    },
+    {
+      "feature": "reactions",
+      "importance": 1.157505105953009
+    },
+    {
+      "feature": "defending_mean",
+      "importance": 0.847711593856184
+    },
+    {
+      "feature": "heading_accuracy",
+      "importance": 0.4682486298061526
+    },
+    {
+      "feature": "dribbling",
+      "importance": 0.44337678156698207
+    },
+    {
+      "feature": "power_mean",
+      "importance": 0.43354638155616215
+    },
+    {
+      "feature": "goalkeeping_mean",
+      "importance": 0.40879379050458753
+    },
+    {
+      "feature": "attacking_mean",
+      "importance": 0.39478173625070173
+    },
+    {
+      "feature": "finishing",
+      "importance": 0.3397650537338226
+    },
+    {
+      "feature": "standing_tackle",
+      "importance": 0.3351669548115851
+    },
+    {
+      "feature": "interceptions",
+      "importance": 0.3286978461847177
+    },
+    {
+      "feature": "long_passing",
+      "importance": 0.3154451160482549
+    },
+    {
+      "feature": "short_passing",
+      "importance": 0.27524669107055133
+    },
+    {
+      "feature": "age",
+      "importance": 0.2748050224687024
+    },
+    {
+      "feature": "strength",
+      "importance": 0.24743238760535718
+    },
+    {
+      "feature": "positioning",
+      "importance": 0.23042150388263352
+    },
+    {
+      "feature": "acceleration",
+      "importance": 0.21586261631336068
+    },
+    {
+      "feature": "sprint_speed",
+      "importance": 0.2133712339275382
+    },
+    {
+      "feature": "gk_diving",
+      "importance": 0.19865704194610617
+    },
+    {
+      "feature": "marking",
+      "importance": 0.1930120963250799
+    }
+  ],
+  "plots": [
+    "data\\08_reporting\\shap_summary.png",
+    "data\\08_reporting\\shap_bar.png"
+  ]
+}

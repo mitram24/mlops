@@ -1,0 +1,10 @@
+# Normalise line endings: store text as LF in the repo regardless of OS.
+* text=auto eol=lf
+
+# Treat these as binary (never normalise / diff).
+*.png binary
+*.jpg binary
+*.parquet binary
+*.pkl binary
+*.db binary
+*.ipynb binary
