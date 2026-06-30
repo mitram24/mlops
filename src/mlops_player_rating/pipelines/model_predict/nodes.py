@@ -10,7 +10,7 @@ import logging
 import numpy as np
 import pandas as pd
 
-from mlops_player_rating.utils import TARGET, normalize_name, preprocess_for_inference
+from mlops_player_rating.core.utils import TARGET, normalize_name, preprocess_for_inference
 
 logger = logging.getLogger(__name__)
 

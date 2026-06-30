@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 
 from mlops_player_rating.pipelines.data_cleaning.nodes import clean_data
-from mlops_player_rating.utils import normalize_columns
+from mlops_player_rating.core.utils import normalize_columns
 
 _PARAMS = {"drop_null_target": True, "max_skill_missing_fraction": 0.5}
 

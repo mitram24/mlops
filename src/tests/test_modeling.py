@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from mlops_player_rating.modeling import (
+from mlops_player_rating.core.modeling import (
     build_model,
     candidate_estimators,
     regression_metrics,

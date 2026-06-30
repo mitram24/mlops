@@ -12,13 +12,13 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import KFold, cross_val_score
 
-from mlops_player_rating.modeling import (
+from mlops_player_rating.core.modeling import (
     build_model,
     candidate_estimators,
     split_feature_types,
 )
-from mlops_player_rating.tracking import setup_mlflow
-from mlops_player_rating.utils import TARGET
+from mlops_player_rating.core.tracking import setup_mlflow
+from mlops_player_rating.core.utils import TARGET
 
 logger = logging.getLogger(__name__)
 

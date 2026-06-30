@@ -21,7 +21,7 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-from mlops_player_rating.utils import preprocess_for_inference
+from mlops_player_rating.core.utils import preprocess_for_inference
 
 logger = logging.getLogger(__name__)
 

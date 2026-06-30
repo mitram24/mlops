@@ -11,8 +11,8 @@ from typing import Any
 
 import pandas as pd
 
-from mlops_player_rating.modeling import split_feature_types
-from mlops_player_rating.utils import TARGET, drop_non_features, engineer_features
+from mlops_player_rating.core.modeling import split_feature_types
+from mlops_player_rating.core.utils import TARGET, drop_non_features, engineer_features
 
 logger = logging.getLogger(__name__)
 

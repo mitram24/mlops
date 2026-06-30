@@ -14,7 +14,7 @@ from typing import Any
 
 import pandas as pd
 
-from mlops_player_rating.utils import SKILL_COLUMNS, normalize_columns
+from mlops_player_rating.core.utils import SKILL_COLUMNS, normalize_columns
 
 logger = logging.getLogger(__name__)
 

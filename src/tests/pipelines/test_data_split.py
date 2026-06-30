@@ -7,7 +7,7 @@ import pandas as pd
 from mlops_player_rating.pipelines.data_cleaning.nodes import clean_data
 from mlops_player_rating.pipelines.data_feat_engeneering.nodes import build_features
 from mlops_player_rating.pipelines.data_split.nodes import split_data
-from mlops_player_rating.utils import TARGET, normalize_columns
+from mlops_player_rating.core.utils import TARGET, normalize_columns
 
 _CLEAN = {"drop_null_target": True, "max_skill_missing_fraction": 0.5}
 

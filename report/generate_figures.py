@@ -28,13 +28,13 @@ from sklearn.model_selection import (
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from mlops_player_rating.modeling import (  # noqa: E402
+from mlops_player_rating.core.modeling import (  # noqa: E402
     build_model,
     candidate_estimators,
     regression_metrics,
     split_feature_types,
 )
-from mlops_player_rating.utils import (  # noqa: E402
+from mlops_player_rating.core.utils import (  # noqa: E402
     TARGET,
     apply_attribute_imputer,
     apply_value_semantics,

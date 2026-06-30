@@ -10,7 +10,7 @@ from typing import Any
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from mlops_player_rating.utils import TARGET
+from mlops_player_rating.core.utils import TARGET
 
 logger = logging.getLogger(__name__)
 

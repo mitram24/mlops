@@ -10,7 +10,7 @@ from typing import Any
 
 import pandas as pd
 
-from mlops_player_rating.utils import (
+from mlops_player_rating.core.utils import (
     ID_COLUMNS,
     SKILL_COLUMNS,
     TARGET,
