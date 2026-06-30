@@ -1,11 +1,10 @@
 """Nodes for the ``data_drifts`` pipeline.
 
 Compares a current batch against the training reference using PSI and the
-Kolmogorov-Smirnov test. A parameter can inject synthetic drift for the monitoring demo.
+Kolmogorov-Smirnov test. Optional synthetic drift can be injected for monitoring checks.
 
-PSI follows the Week 6 course material, which credits Matthew Burke (github.com/mwburke):
-for each bucket, sum ``(current_pct - reference_pct) * ln(current_pct / reference_pct)``.
-Buckets are based on reference quantiles so skewed skill ratings still get usable bins."""
+PSI is computed by summing ``(current_pct - reference_pct) * ln(current_pct / reference_pct)``
+across reference-quantile buckets."""
 
 from __future__ import annotations
 

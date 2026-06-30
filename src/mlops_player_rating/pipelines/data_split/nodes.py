@@ -21,8 +21,7 @@ def split_data(
     """Split the feature table into train/test design matrices and targets.
 
     The target is kept on its native 0 to 100 rating scale; no transform is applied
-    (see ``modeling.build_model``), so every downstream artefact (metrics, SHAP,
-    predictions, the served model) speaks the same, human-readable unit.
+    before model training, metric calculation, prediction or serving.
     """
     if TARGET not in model_features.columns:
         raise KeyError(f"Target column '{TARGET}' not found in feature table.")

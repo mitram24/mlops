@@ -1,11 +1,7 @@
 """Nodes for the ``data_quality`` pipeline.
 
 Validates the raw table for schema, types, ranges, ids, duplicates and missing values.
-Critical failures stop the pipeline. Warning-level failures are kept in a JSON report
-under ``data/08_reporting``.
-
-The checks cover the same validation topics as the course material, implemented with
-plain Python assertions for this single-table project."""
+Critical failures stop the pipeline; warning-level failures are returned in the report."""
 
 from __future__ import annotations
 

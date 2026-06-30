@@ -73,6 +73,10 @@ def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Return a copy of ``df`` with every column header normalised to snake_case."""
     df = df.copy()
     df.columns = [normalize_name(c) for c in df.columns]
+    
+    # Drop raw skill columns to prevent perfect multicollinearity and over-dimensionality.
+    df = df.drop(columns=[c for c in SKILL_COLUMNS if c in df.columns])
+
     return df
 
 
@@ -106,27 +110,10 @@ def apply_value_semantics(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def fit_attribute_imputer(df: pd.DataFrame) -> dict[str, float]:
-    """Learn a per-attribute median from the training data.
-
-    Returned so it can be persisted as a feature-store artefact and re-applied at
-    inference time — never recomputed from serving data (which avoids train/serve skew).
-    """
-    medians: dict[str, float] = {}
-    for col in SKILL_COLUMNS:
-        if col in df.columns:
-            value = pd.to_numeric(df[col], errors="coerce").median()
-            medians[col] = float(value) if pd.notna(value) else 0.0
-    return medians
 
 
-def apply_attribute_imputer(df: pd.DataFrame, medians: dict[str, float]) -> pd.DataFrame:
-    """Fill missing skill ratings using the pre-fitted training medians."""
-    df = df.copy()
-    for col, median in medians.items():
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(median)
-    return df
+
+
 
 
 def _compute_age(df: pd.DataFrame) -> pd.Series:
@@ -179,7 +166,6 @@ def drop_non_features(df: pd.DataFrame, extra: list[str] | None = None) -> pd.Da
 
 def preprocess_for_inference(
     raw: pd.DataFrame,
-    attribute_medians: dict[str, float],
     feature_columns: list[str],
 ) -> pd.DataFrame:
     """Full raw -> model-ready transformation used by the serving API.
@@ -189,7 +175,6 @@ def preprocess_for_inference(
     """
     df = normalize_columns(raw)
     df = apply_value_semantics(df)
-    df = apply_attribute_imputer(df, attribute_medians)
     df = engineer_features(df)
     df = drop_non_features(df, extra=[TARGET])
     # Align to the exact training schema.

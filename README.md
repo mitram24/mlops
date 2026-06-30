@@ -8,8 +8,8 @@ This NOVA IMS MLOps project predicts a football player's FIFA overall rating fro
 ### See the results without running anything
 
 Pre-generated outputs are committed directly to the repo:
-Metrics in `data/08_reporting/model_metrics.json` show RMSE 1.45, R2 0.954, and MAPE 1.57 %, with 86.8 % of predictions within +/- 2 points. `model_selection_report.json` covers the 5-fold CV that picked HistGradientBoosting.
-SHAP plots (`shap_summary.png`, `shap_bar.png`) and the drift reports (`drift_report.json`, `evidently_drift_report.html`) are in the reporting folder. The trained artifact is at `data/06_models/champion_model.pkl`, so the FastAPI container can serve it directly. Batch predictions against actuals are available in `data/07_model_output/predictions.csv`. `MODEL_CARD.md` contains the full technical write-up.
+Metrics in `data/08_reporting/model_metrics.json` show RMSE 1.45, R2 0.954, and MAPE 1.57 %, with 86.8 % of predictions within +/- 2 points. `data/08_reporting/model_selection_report.json` covers the 5-fold CV that picked HistGradientBoosting.
+SHAP plots (`data/08_reporting/shap_summary.png`, `data/08_reporting/shap_bar.png`) and drift reports (`data/08_reporting/drift_report.json`, `data/08_reporting/evidently_drift_report.html`) are in the reporting layer. The trained artefact is at `data/06_models/champion_model.pkl`, so the FastAPI container can serve it directly. Batch predictions against actuals are available in `data/07_model_output/predictions.csv`. `MODEL_CARD.md` contains the full technical write-up.
 
 ## 1. Pipeline architecture
 
@@ -39,10 +39,10 @@ of the box. It is one row per FIFA attribute snapshot (33 skill ratings on a 0 t
 preferred foot, work rates, plus the player's height, weight and birthday joined from the
 `Player` table), with the target column `overall_rating`.
 
-The full dataset has about 184k snapshots. As the brief invites shipping "a sample of data to
-run", the committed CSV is a deterministic 6,000-row sample (seed 42), so the whole pipeline
-runs end to end in about two minutes and stays reproducible. Regenerate it, at any size, from
-the original SQLite file:
+The full dataset has about 184k snapshots. The handout allows a runnable data sample, so the
+committed CSV is a deterministic 6,000-row sample (seed 42). The whole pipeline runs end to end
+in about two minutes and stays reproducible. Regenerate the table at any size from the original
+SQLite file:
 
 ```bash
 # Full dataset:

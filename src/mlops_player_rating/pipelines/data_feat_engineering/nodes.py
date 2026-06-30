@@ -36,13 +36,11 @@ DERIVED_FEATURES = [
 def build_features(
     cleaned: pd.DataFrame, params: dict[str, Any]
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Engineer model features and emit a feature-store metadata document.
+    """Engineer model features and emit feature metadata.
 
     Returns:
-        ``(feature_table, feature_metadata)``. ``feature_table`` is the offline feature
-        store (persisted as parquet under ``data/04_feature``); ``feature_metadata`` is a
-        machine-readable description (dtypes, derived features, numeric/categorical split)
-        that documents every feature and is reused downstream.
+        ``(feature_table, feature_metadata)`` with dtypes, derived features and the
+        numeric/categorical feature split used downstream.
     """
     df = engineer_features(cleaned)
 

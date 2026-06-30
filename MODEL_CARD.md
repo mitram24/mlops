@@ -1,7 +1,7 @@
 # MLOps Project Report: FIFA Player Rating Prediction (European Soccer Database)
 
-> Every number below comes from an actual `kedro run` on the shipped data sample (seed 42)
-> and is reproducible. Re-run the pipeline to regenerate all artefacts.
+> Metrics below come from `kedro run` on the shipped 6,000-row sample (seed 42).
+> Re-run the pipeline to regenerate the artefacts.
 
 ## 1. Problem, data and success metrics
 
@@ -66,7 +66,7 @@ Rows missing a target (0.5%) are dropped. Missing skill blocks are median-impute
 Engineered features include `age` (snapshot date minus birthday), `bmi`, seven FIFA-style attribute-group means (attacking, skill, movement, power, mentality, defending, goalkeeping), and an `is_goalkeeper` flag.
 
 ### 3.2 Modelling
-Five-fold cross-validation over four candidates (`model_selection_report.json`):
+Five-fold cross-validation over four candidates (`data/08_reporting/model_selection_report.json`):
 
 | Model | CV RMSE (pts) |
 |-------|--------------|
@@ -91,7 +91,7 @@ We re-split the data by player instead of by row (`GroupShuffleSplit` on `player
 | Random (shipped) | 1.45 | 0.954 | 86.8 |
 | Player-grouped | 1.54 | 0.950 | 84.2 |
 
-The cost of the leakage is small: RMSE rises from 1.45 to 1.54 and the within-2 rate falls from 86.8 to 84.2 percent, but every threshold from Section 1 still holds. We also went back through the correlation table looking for any other near-duplicate of the target; nothing else came close, `reactions` remains the strongest retained correlate. Residual and calibration plots in `notebooks/model_evaluation.ipynb` show residuals centred near zero, and binned predictions follow observed ratings closely in the dense middle of the range. The learning curve there covers only the 6,000-row sample, so it tells us the sample is enough for this result, not that more data from the full 184k-row table would not help further.
+Random-split optimism is limited: RMSE rises from 1.45 to 1.54 and the within-2 rate falls from 86.8% to 84.2%, while every Section 1 threshold still holds. A second pass through the correlation table found no other near-duplicate of the target; `reactions` remains the strongest retained correlate. Residual and calibration plots in `notebooks/model_evaluation.ipynb` show residuals centred near zero, with binned predictions close to observed ratings in the dense middle of the range. The learning curve covers only the 6,000-row sample, so it supports this sampled run but does not prove that the full 184k-row table would add no value.
 
 We checked reproducibility by running the full DAG twice in a clean virtual environment. Both
 runs passed, `pytest` passed, and `model_metrics.json` matched exactly across runs (RMSE 1.4483

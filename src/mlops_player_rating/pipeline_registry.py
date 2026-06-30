@@ -12,7 +12,7 @@ from kedro.pipeline import Pipeline
 from mlops_player_rating.pipelines import (
     data_cleaning,
     data_drifts,
-    data_feat_engeneering,
+    data_feat_engineering,
     data_quality,
     data_split,
     model_predict,
@@ -29,7 +29,7 @@ def register_pipelines() -> dict[str, Pipeline]:
     """
     dq = data_quality.create_pipeline()
     clean = data_cleaning.create_pipeline()
-    feat = data_feat_engeneering.create_pipeline()
+    feat = data_feat_engineering.create_pipeline()
     split = data_split.create_pipeline()
     selection = model_selection.create_pipeline()
     train = model_train.create_pipeline()
@@ -37,15 +37,15 @@ def register_pipelines() -> dict[str, Pipeline]:
     drift = data_drifts.create_pipeline()
 
     # Convenience macro-pipelines -------------------------------------------------
-    data_processing = dq + clean + feat + split
-    modelling = selection + train
-    inference = predict + drift
+    data_processing = dq + clean + feat
+    training_pipeline = data_processing + split + selection + train
+    inference_pipeline = data_processing + drift + predict
 
     pipelines: dict[str, Pipeline] = {
         # --- atomic components (run them in isolation) ---
         "data_quality": dq,
         "data_cleaning": clean,
-        "data_feat_engeneering": feat,
+        "data_feat_engineering": feat,
         "data_split": split,
         "model_selection": selection,
         "model_train": train,
@@ -53,9 +53,9 @@ def register_pipelines() -> dict[str, Pipeline]:
         "data_drifts": drift,
         # --- macro stages ---
         "data_processing": data_processing,
-        "modelling": modelling,
-        "inference": inference,
+        "training": training_pipeline,
+        "inference": inference_pipeline,
         # --- full end-to-end run ---
-        "__default__": data_processing + modelling + inference,
+        "__default__": training_pipeline,
     }
     return pipelines

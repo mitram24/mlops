@@ -179,7 +179,7 @@ The \code{data\_quality} pipeline validates the raw 6{,}000-row sample against 1
 
 \subsection{Modelling and validation}
 \label{sec:modelling}
-We evaluated four models using 5-fold cross-validation. Table~\ref{tab:cv} shows that tree-based models significantly outperformed linear baselines, indicating strong non-linear interactions between player attributes. We selected HistGradientBoosting as the champion model. On the held-out test set, it achieved an RMSE of 1.45, MAE of 1.05, and an $R^2$ of 0.954.
+We evaluated four models using 5-fold cross-validation. Table~\ref{tab:cv} shows that the tree-based models achieved lower RMSE than the linear baselines, suggesting that the linear models did not capture the relationship between attributes and rating as well. We selected HistGradientBoosting as the champion model. On the held-out test set, it achieved an RMSE of 1.45, MAE of 1.05, and an $R^2$ of 0.954.
 
 \begin{table}[H]
 \centering
@@ -198,9 +198,9 @@ Ridge                           & 3.30 \\
 \label{tab:cv}
 \end{table}
 
-The high $R^2$ is expected because the attributes we used are the underlying components of the official FIFA rating formula. However, because the dataset contains multiple snapshots per player, a standard random split can leak player identity between train and test sets. When we performed a grouped split on \code{player\_api\_id} to strictly separate players, performance only degraded slightly (RMSE 1.54, $R^2$ 0.950, 84.2\% within 2 points), which suggests that the random split was not the only reason for the strong test result.
+The high $R^2$ is expected because the features include the same types of skill attributes used to assign FIFA ratings. However, because the dataset contains multiple snapshots per player, a standard random split can leak player identity between train and test sets. When we performed a grouped split on \code{player\_api\_id} to separate players across splits, performance changed only modestly (RMSE 1.54, $R^2$ 0.950, 84.2\% within 2 points), which suggests that player overlap was not the only reason for the strong test result.
 
-Diagnostic plots (Figure~\ref{fig:diag}) show well-calibrated predictions through the bulk of the distribution and homoscedastic residuals.
+Diagnostic plots (Figure~\ref{fig:diag}) show that predictions track observed ratings through most of the distribution, and the residual plot does not show a clear pattern.
 
 \begin{figure}[H]
 \centering
@@ -232,13 +232,13 @@ The \code{model\_train} node generates feature importance metrics using SHAP (fa
 \label{fig:shap}
 \end{figure}
 
-The SHAP summary plot confirms \code{reactions} and \code{ball\_control} are the primary drivers, consistent with our initial EDA. The \code{goalkeeping\_mean} feature separates goalkeeper profiles from outfield-player profiles, so one model can handle both groups.
+The SHAP summary plot shows that \code{reactions} and \code{ball\_control} have the largest contributions, consistent with their high correlations in the initial EDA. The \code{goalkeeping\_mean} feature helps separate goalkeeper profiles from outfield-player profiles, allowing one model to handle both groups.
 
 \subsection{Drift monitoring}
 \label{sec:drift}
 To detect distribution shifts, the \code{data\_drifts} node compares new batches to the training distribution using Population Stability Index (PSI) and the 2-sample Kolmogorov-Smirnov (KS) test.
 
-The baseline run (\code{drift\_report.json}) flagged 1 out of 48 features. With $\alpha=0.05$, a single flag is within expected false-positive bounds, so no dataset-level drift was triggered. To validate the monitoring logic, we simulated a drift scenario (\code{drift\_report\_simulated.json}), which flagged 18 features and raised a dataset-level alert. Figure~\ref{fig:drift} compares the PSI scores between the clean and drifted batches. The current implementation monitors feature drift only. Target drift and concept drift would require later batches with observed outcomes.
+The baseline run (\code{drift\_report.json}) flagged 1 out of 48 features. With $\alpha=0.05$ across 48 feature tests, one flagged feature is not enough by itself to treat the batch as drifted, so no dataset-level drift was triggered. As a smoke test for the monitoring logic, we simulated a drift scenario (\code{drift\_report\_simulated.json}), which flagged 18 features and raised a dataset-level alert. Figure~\ref{fig:drift} compares the PSI scores between the clean and drifted batches. The current implementation monitors feature drift only. Target drift and concept drift would require later batches with observed outcomes.
 
 \begin{figure}[H]
 \centering
@@ -266,7 +266,7 @@ The current pipeline runs locally on a static CSV sample. Moving it toward produ
     \item \textbf{Drift Alerting:} The Evidently reports are batch-only right now. We need to set up automated alerting and a retrain trigger when the KS/PSI thresholds are breached.
 \end{itemize}
 
-If a clean, independently sourced version of the \code{potential} feature becomes available, the feature store would be the right place to enforce rules to add it back without breaking the current model.
+If a clean, independently sourced version of the \code{potential} feature becomes available, it should be added through the feature store and treated as a new model version, with leakage checks and retraining before use.
 
 % ===========================================================================
 \section{Environment \& Dependencies}
@@ -275,7 +275,7 @@ To make the environment reproducible, we pinned all \raisebox{0.5ex}{\~}250 depe
 
 \begin{itemize}
     \item \textbf{Pipeline \& Data:} \code{kedro} (0.19.x) for orchestrating the DAG, with \code{pandas}, \code{numpy}, and \code{pyarrow} for data wrangling.
-    \item \textbf{Modelling \& Metrics:} \code{scikit-learn} (1.x) for the model zoo and preprocessing, with \code{scipy} (1.1x) backing the statistical drift tests.
+    \item \textbf{Modelling \& Metrics:} \code{scikit-learn} (1.x) for candidate models and preprocessing, with \code{scipy} (1.1x) backing the statistical drift tests.
     \item \textbf{Tracking \& Serving:} \code{mlflow} (3.x) handles the model registry, while \code{fastapi} and \code{uvicorn} run the REST API.
     \item \textbf{Monitoring \& Explainability:} \code{evidently} (0.7.x) generates the HTML drift reports, and \code{shap} (0.5.x) provides feature importance metrics.
     \item \textbf{Testing:} \code{pytest} runs our 25 unit and integration tests.
