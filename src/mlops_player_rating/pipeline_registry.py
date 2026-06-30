@@ -46,9 +46,11 @@ def register_pipelines() -> dict[str, Pipeline]:
         "data_quality": dq,
         "data_cleaning": clean,
         "data_feat_engineering": feat,
+        "data_feat_engeneering": feat,
         "data_split": split,
         "model_selection": selection,
         "model_train": train,
+        "modelling": selection + train,
         "model_predict": predict,
         "data_drifts": drift,
         # --- macro stages ---

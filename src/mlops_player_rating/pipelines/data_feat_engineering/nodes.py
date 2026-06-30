@@ -12,7 +12,7 @@ from typing import Any
 import pandas as pd
 
 from mlops_player_rating.core.modeling import split_feature_types
-from mlops_player_rating.core.utils import TARGET, drop_non_features, engineer_features
+from mlops_player_rating.core.utils import LEAKAGE_COLUMNS, NON_FEATURE_COLUMNS, TARGET, engineer_features
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,8 @@ def build_features(
 
     # Remove leakage (``potential``) and the raw columns consumed by feature engineering
     # (``date``/``birthday`` -> age, ``player_name``); the target is preserved.
-    df = drop_non_features(df)
+    to_drop = LEAKAGE_COLUMNS + NON_FEATURE_COLUMNS
+    df = df.drop(columns=[c for c in to_drop if c in df.columns])
 
     drop_cols = [c for c in params.get("drop_columns", []) if c in df.columns]
     if drop_cols:

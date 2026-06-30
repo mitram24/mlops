@@ -11,7 +11,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=clean_data,
                 inputs=["ingested", "params:cleaning"],
-                outputs="cleaned",
+                outputs=["cleaned", "attribute_imputer"],
                 name="clean_data_node",
             ),
         ]

@@ -52,3 +52,7 @@ htmlcov/
 .ruff_cache/
 .kedro.yml
 session_store.db
+
+# ---- Local one-off repair scripts ----
+/fix_*.py
+/test_kedro.py

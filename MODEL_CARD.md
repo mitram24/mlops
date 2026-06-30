@@ -1,7 +1,7 @@
 # MLOps Project Report: FIFA Player Rating Prediction (European Soccer Database)
 
-> Metrics below come from `kedro run` on the shipped 6,000-row sample (seed 42).
-> Re-run the pipeline to regenerate the artefacts.
+> Metrics below come from `kedro run` plus the reporting/inference commands on the shipped 6,000-row sample (seed 42).
+> Run `kedro run` for training artefacts, then the named reporting/inference pipelines for downstream artefacts.
 
 ## 1. Problem, data and success metrics
 
@@ -43,7 +43,7 @@ We organised the work as the Kedro pipelines themselves, with each pipeline mapp
 | Sprint | Theme | Deliverable |
 |--------|-------|-------------|
 | S1 | Data quality and ingestion | `data_quality` pipeline with 19 assertions, JSON report |
-| S2 | Cleaning and feature store | `data_cleaning`, `data_feat_engeneering`, feature metadata |
+| S2 | Cleaning and feature store | `data_cleaning`, `data_feat_engineering`, feature metadata |
 | S3 | Modelling and tracking | `data_split`, `model_selection`, `model_train` with MLflow |
 | S4 | Explainability and reporting | SHAP, metrics, feature-importance artefacts |
 | S5 | Serving and containers | FastAPI app, Dockerfile, docker-compose |
@@ -61,7 +61,7 @@ a fresh batch, without re-running the whole DAG.
 
 Work-rate columns contain invalid labels such as "norm", "stoc", "y", and "le". The pipeline treats valid work rates as ordered categories and maps invalid or missing labels to the modal category, "medium".
 
-Rows missing a target (0.5%) are dropped. Missing skill blocks are median-imputed. These medians are computed on the full cleaned table before the split and saved to disk as a feature-store artefact. The serving API uses this artefact directly to score records without recalculating medians. This is acceptable for the proof-of-concept sample, but a production version should fit imputers inside the training fold or feature-store training job.
+Rows missing a target (0.5%) are dropped. Missing skill blocks are median-imputed. These medians are computed on the full cleaned table before the split and saved to disk as a feature-store artefact. The serving API uses this artefact for the saved skill-attribute medians, but this should not be read as support for arbitrary omitted request fields. This is acceptable for the proof-of-concept sample, but a production version should fit imputers inside the training fold or feature-store training job.
 
 Engineered features include `age` (snapshot date minus birthday), `bmi`, seven FIFA-style attribute-group means (attacking, skill, movement, power, mentality, defending, goalkeeping), and an `is_goalkeeper` flag.
 
@@ -91,11 +91,11 @@ We re-split the data by player instead of by row (`GroupShuffleSplit` on `player
 | Random (shipped) | 1.45 | 0.954 | 86.8 |
 | Player-grouped | 1.54 | 0.950 | 84.2 |
 
-Random-split optimism is limited: RMSE rises from 1.45 to 1.54 and the within-2 rate falls from 86.8% to 84.2%, while every Section 1 threshold still holds. A second pass through the correlation table found no other near-duplicate of the target; `reactions` remains the strongest retained correlate. Residual and calibration plots in `notebooks/model_evaluation.ipynb` show residuals centred near zero, with binned predictions close to observed ratings in the dense middle of the range. The learning curve covers only the 6,000-row sample, so it supports this sampled run but does not prove that the full 184k-row table would add no value.
+Random-split optimism is limited: RMSE rises from 1.45 to 1.54 and the within-2 rate falls from 86.8% to 84.2%, while every Section 1 threshold still holds. A second pass through the correlation table found no other near-duplicate of the target; `reactions` remains the strongest retained correlate. The robustness report also slices error by goalkeeper/outfield status and rating band, but it does not include protected-attribute subgroup or fairness metrics. Residual and calibration plots in `notebooks/model_evaluation.ipynb` show residuals centred near zero, with binned predictions close to observed ratings in the dense middle of the range. The learning curve covers only the 6,000-row sample, so it supports this sampled run but does not prove that the full 184k-row table would add no value.
 
-We checked reproducibility by running the full DAG twice in a clean virtual environment. Both
+We checked reproducibility by running the documented Kedro training commands twice in a clean virtual environment. Both
 runs passed, `pytest` passed, and `model_metrics.json` matched exactly across runs (RMSE 1.4483
-both times). Cross-validation and the Random Forest candidate originally used `n_jobs=-1`, which reorders floating-point sums across parallel workers and breaks exact reproducibility even with a fixed seed; we pinned `n_jobs=1` in `modeling.py` and `model_selection/nodes.py` so a fresh `kedro run` reproduces the same numbers, not just the same champion.
+both times). Cross-validation and the Random Forest candidate originally used `n_jobs=-1`, which reorders floating-point sums across parallel workers and breaks exact reproducibility even with a fixed seed; we pinned `n_jobs=1` in `modeling.py` and `model_selection/nodes.py` so the documented Kedro commands reproduce the same numbers, not just the same champion.
 
 ### 3.3 Feature importance and explainability (SHAP)
 `model_train` computes SHAP values on the final model, saving `shap_summary.png` and `shap_bar.png`.
@@ -126,14 +126,12 @@ also block that feature in CI or feature-store checks. The current drift monitor
 distributions, so it does not detect prediction drift or concept drift. Retraining is also not yet
 triggered from labelled feedback.
 
-Reproducibility comes from a single random seed (`parameters.yml`), pinned dependencies
-(`requirements.txt` and `requirements-lock.txt`), single-threaded model fitting, and persisted
-Kedro layers, so any teammate reproduces the same metrics and the same champion from `kedro run`,
+Reproducibility comes from a single random seed (`parameters.yml`), dependency ranges declared in `pyproject.toml`, single-threaded model fitting, and persisted Kedro layers, so any teammate reproduces the same metrics and the same champion from the documented Kedro commands,
 not just an approximately similar one.
 
 ## 5. Packages and versions
 
-Core stack (exact versions frozen in `requirements-lock.txt`):
+Core stack declared in `pyproject.toml`:
 
 | Package | Version | Role |
 |---------|---------|------|
@@ -147,14 +145,14 @@ Core stack (exact versions frozen in `requirements-lock.txt`):
 | shap | 0.5x | Model explainability |
 | evidently | 0.7.x | HTML drift report |
 | matplotlib | 3.x | SHAP and importance plots |
-| fastapi / uvicorn / pydantic | see lock file | Model serving |
+| fastapi / uvicorn / pydantic | declared ranges | Model serving |
 | pytest / pytest-cov | 8.x / 5.x | Testing |
 
 ## 6. How to reproduce
 
 ```bash
-pip install -r requirements.txt && pip install -e .
-kedro run                       # full DAG, all artefacts in data/
-pytest                          # 25 unit and pipeline tests
+pip install -e .
+kedro run                       # training DAG; run named inference/drift pipelines for downstream artefacts
+pytest                          # 30 unit and pipeline tests
 uvicorn mlops_player_rating.serving.app:app --reload   # serve at :8000
 ```

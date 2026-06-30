@@ -124,7 +124,7 @@ criterion on the held-out test set.}
 % ===========================================================================
 The project is implemented as separate Kedro pipelines rather than a single notebook, which makes each stage runnable and testable on its own. The pipeline covers data quality checks, cleaning, feature generation, model training with MLflow tracking, explainability, containerized serving, and drift monitoring. Each part can run independently through Kedro.
 
-We structured the data using Kedro's standard layering (\code{01\_raw} to \code{08\_reporting}). As shown in Figure~\ref{fig:dag}, the architecture consists of eight interconnected pipelines. The data prep stages run sequentially, followed by two parallel branches that use the trained champion model. Running \code{kedro run} executes the entire DAG, but we can also trigger individual components with \code{kedro run -{}-pipeline <name>}. This structure keeps retraining, batch scoring, and drift checks as separate operational tasks: \code{model\_predict} can score new data, and \code{data\_drifts} can check for distribution shifts without needing to retrain the model from scratch.
+We structured the data using Kedro's standard layering (\code{01\_raw} to \code{08\_reporting}). As shown in Figure~\ref{fig:dag}, the architecture consists of eight interconnected pipelines. The data prep stages run sequentially, followed by two parallel branches that use the trained champion model. Running \code{kedro run} executes the training DAG through model training. Downstream prediction and drift checks run as named pipelines, so we can trigger individual components with \code{kedro run -{}-pipeline <name>}. This structure keeps retraining, batch scoring, and drift checks as separate operational tasks: \code{model\_predict} can score new data, and \code{data\_drifts} can check for distribution shifts without needing to retrain the model from scratch.
 
 \begin{figure}[H]
 \centering
@@ -135,7 +135,7 @@ We structured the data using Kedro's standard layering (\code{01\_raw} to \code{
   arr/.style={-{Stealth[length=2.5mm]}, thick, gray!55}]
   \node[box] (q)  {data\_quality};
   \node[box, right=of q] (c)  {data\_cleaning};
-  \node[box, right=of c] (fe) {data\_feat\_\\engeneering};
+  \node[box, right=of c] (fe) {data\_feat\_engineering};
   \node[box, right=of fe] (s) {data\_split};
   \node[box, below=8mm of s] (sel) {model\_\\selection};
   \node[box, left=of sel] (tr) {model\_train};
@@ -157,7 +157,8 @@ produce the champion, and \code{model\_predict} and \code{data\_drifts} consume 
 A single \code{modeling.py} module holds the full preprocessing and estimator chain, so the model
 compared during cross-validation is the same object that is trained and served. The serving layer
 calls the same \code{preprocess\_for\_inference} routine as the offline pipeline, which reduces
-the risk of training-serving skew. A row-level parity test would make this check explicit by
+the risk of training-serving skew. Saved medians cover the skill attributes stored in the serving
+metadata, but the API should not be described as accepting arbitrary omitted request fields. A row-level parity test would make this check explicit by
 verifying that both paths produce identical output on the same input.
 
 % ===========================================================================
@@ -198,7 +199,7 @@ Ridge                           & 3.30 \\
 \label{tab:cv}
 \end{table}
 
-The high $R^2$ is expected because the features include the same types of skill attributes used to assign FIFA ratings. However, because the dataset contains multiple snapshots per player, a standard random split can leak player identity between train and test sets. When we performed a grouped split on \code{player\_api\_id} to separate players across splits, performance changed only modestly (RMSE 1.54, $R^2$ 0.950, 84.2\% within 2 points), which suggests that player overlap was not the only reason for the strong test result.
+The high $R^2$ is expected because the features include the same types of skill attributes used to assign FIFA ratings. However, because the dataset contains multiple snapshots per player, a standard random split can leak player identity between train and test sets. When we performed a grouped split on \code{player\_api\_id} to separate players across splits, performance changed only modestly (RMSE 1.54, $R^2$ 0.950, 84.2\% within 2 points), with zero overlapping players between train and test. This suggests that player overlap was not the only reason for the strong test result. The robustness report includes goalkeeper/outfield and rating-band error slices, but it does not include protected-attribute subgroup or fairness metrics.
 
 Diagnostic plots (Figure~\ref{fig:diag}) show that predictions track observed ratings through most of the distribution, and the residual plot does not show a clear pattern.
 
@@ -271,14 +272,14 @@ If a clean, independently sourced version of the \code{potential} feature become
 % ===========================================================================
 \section{Environment \& Dependencies}
 % ===========================================================================
-To make the environment reproducible, we pinned all \raisebox{0.5ex}{\~}250 dependencies in \code{requirements-lock.txt}. Rather than listing every package, here are the main packages used by the pipeline:
+The environment is declared in \code{pyproject.toml}. Rather than listing every transitive package, here are the main packages used by the pipeline:
 
 \begin{itemize}
     \item \textbf{Pipeline \& Data:} \code{kedro} (0.19.x) for orchestrating the DAG, with \code{pandas}, \code{numpy}, and \code{pyarrow} for data wrangling.
     \item \textbf{Modelling \& Metrics:} \code{scikit-learn} (1.x) for candidate models and preprocessing, with \code{scipy} (1.1x) backing the statistical drift tests.
     \item \textbf{Tracking \& Serving:} \code{mlflow} (3.x) handles the model registry, while \code{fastapi} and \code{uvicorn} run the REST API.
     \item \textbf{Monitoring \& Explainability:} \code{evidently} (0.7.x) generates the HTML drift reports, and \code{shap} (0.5.x) provides feature importance metrics.
-    \item \textbf{Testing:} \code{pytest} runs our 25 unit and integration tests.
+    \item \textbf{Testing:} \code{pytest} runs our 30 unit and integration tests.
 \end{itemize}
 
 \end{document}

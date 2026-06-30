@@ -28,5 +28,5 @@ def test_registry_contains_all_components():
 
 def test_default_pipeline_runs_every_stage():
     pipelines = register_pipelines()
-    # quality + cleaning + fe + split + selection + train + predict + drift
-    assert len(pipelines["__default__"].nodes) == 8
+    # quality + cleaning + fe + split + selection + train
+    assert len(pipelines["__default__"].nodes) == 6
