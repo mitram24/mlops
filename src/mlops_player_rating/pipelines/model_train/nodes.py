@@ -1,19 +1,7 @@
 """Nodes for the ``model_train`` pipeline.
 
-Trains the champion model, evaluates it on the held-out test set, computes SHAP
-explainability (with a graceful permutation-importance fallback), and logs params,
-metrics, the serialised model and the explainability plots to MLflow, registering the
-model so it is versioned.
-
-Adapted from the course's bank-example ``model_train/nodes.py``, which fit a
-RandomForestClassifier, logged accuracy via ``mlflow.sklearn.autolog``, and explained it
-with ``shap.TreeExplainer`` directly. Retargeted for regression (RMSE/MAE/R2/MAPE instead
-of accuracy), and the explainability step is more defensive: ``shap.Explainer`` picks the
-right algorithm for the fitted estimator automatically, falls back to the model-agnostic
-``shap.Explainer(estimator.predict, ...)`` if that fails, and falls back again to
-permutation importance if SHAP itself is unavailable, so the pipeline never silently
-skips explainability.
-"""
+Trains the selected model, evaluates it on the test set, writes SHAP or permutation
+importance outputs, and logs metrics, plots and the model to MLflow."""
 
 from __future__ import annotations
 
@@ -92,7 +80,7 @@ def _explain(
         logger.info("SHAP explanations computed on %d samples", len(x_sample))
 
     except Exception as exc:  # noqa: BLE001
-        logger.warning("SHAP unavailable (%s) — using permutation importance instead", exc)
+        logger.warning("SHAP unavailable (%s) - using permutation importance instead", exc)
         from sklearn.inspection import permutation_importance
 
         result = permutation_importance(

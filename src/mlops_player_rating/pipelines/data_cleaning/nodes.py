@@ -1,10 +1,7 @@
 """Nodes for the ``data_cleaning`` pipeline.
 
-The general shape (a dedicated cleaning stage between ingestion and feature engineering)
-follows the course's preprocessing pipelines, but the cleaning rules themselves
-(work-rate label repair, median imputation, target-null drop) are specific to this
-dataset and were not taught directly in class.
-"""
+Cleans work-rate labels, drops rows that cannot be trained on, and fits the median
+imputer reused by inference."""
 
 from __future__ import annotations
 
@@ -28,16 +25,15 @@ logger = logging.getLogger(__name__)
 def clean_data(
     ingested: pd.DataFrame, params: dict[str, Any]
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Resolve dirty values, drop unusable rows and impute missing skill ratings.
+    """Clean work-rate values, drop unusable rows and impute missing skill ratings.
 
     Returns:
-        ``(cleaned, attribute_imputer)`` — the cleaned primary table plus the fitted
-        per-attribute median artefact (persisted to the feature store so the online
-        service can reuse identical imputation values, avoiding train/serve skew).
+        ``(cleaned, attribute_imputer)``: the cleaned table and the saved per-attribute
+        medians used again by inference.
     """
     df = apply_value_semantics(ingested)
 
-    # Rows with no target cannot be trained or evaluated on — drop them.
+    # Rows with no target cannot be trained or evaluated on - drop them.
     if params.get("drop_null_target", True) and TARGET in df.columns:
         before = len(df)
         df = df[pd.to_numeric(df[TARGET], errors="coerce").notna()].reset_index(drop=True)
@@ -57,7 +53,7 @@ def clean_data(
     df = apply_attribute_imputer(df, medians)
     attribute_imputer = {"attribute_medians": medians}
 
-    # Identifier columns carry no signal and risk leakage — drop them.
+    # Identifier columns carry no signal and risk leakage - drop them.
     df = df.drop(columns=[c for c in ID_COLUMNS if c in df.columns])
 
     n_missing = int(df.isna().sum().sum())

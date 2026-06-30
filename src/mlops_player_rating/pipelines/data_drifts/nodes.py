@@ -1,16 +1,11 @@
 """Nodes for the ``data_drifts`` pipeline.
 
-Compares a *current* batch of data against the training *reference* using PSI and the
-Kolmogorov-Smirnov test, so once the model is in production this pipeline can run on its
-own to decide whether a retrain is due. A switch lets us inject a shifted batch for the
-drift-monitoring example.
+Compares a current batch against the training reference using PSI and the
+Kolmogorov-Smirnov test. A parameter can inject synthetic drift for the monitoring demo.
 
-PSI formula adapted from the course material (Week 6, ``01_datadrift_PSI.ipynb``), which in
-turn credits Matthew Burke (github.com/mwburke): for each bucket, sum
-``(current_pct - reference_pct) * ln(current_pct / reference_pct)``. We bucket on quantiles
-of the reference distribution instead of fixed-width bins, which is a more robust choice for
-skewed FIFA skill ratings, but the underlying statistic is the same.
-"""
+PSI follows the Week 6 course material, which credits Matthew Burke (github.com/mwburke):
+for each bucket, sum ``(current_pct - reference_pct) * ln(current_pct / reference_pct)``.
+Buckets are based on reference quantiles so skewed skill ratings still get usable bins."""
 
 from __future__ import annotations
 
@@ -148,7 +143,7 @@ def evaluate_drift(
 
 
 def _maybe_evidently(reference: pd.DataFrame, current: pd.DataFrame, params: dict[str, Any]) -> None:
-    """Best-effort Evidently HTML report (the class tool); silently skipped if absent."""
+    """Write an Evidently HTML drift report when Evidently is installed."""
     reporting_dir = Path(params.get("reporting_dir", "data/08_reporting"))
     reporting_dir.mkdir(parents=True, exist_ok=True)
     out = reporting_dir / "evidently_drift_report.html"

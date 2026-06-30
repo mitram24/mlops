@@ -1,14 +1,7 @@
 """Nodes for the ``model_selection`` pipeline.
 
-Cross-validates every candidate model on the training split and logs each one as an
-MLflow run, then nominates the champion (lowest mean CV RMSE). Selection is decoupled
-from the final fit so we can re-run it cheaply whenever the model zoo changes.
-
-Adapted from the course's bank-example ``model_selection/nodes.py``, which compared a
-classifier zoo with ``GridSearchCV`` against accuracy. Retargeted for regression: K-fold
-RMSE instead of a train/test accuracy split, and no grid search, the model zoo here is
-small enough that a plain cross-validated comparison is sufficient.
-"""
+Cross-validates candidate regressors on the training split, logs each run to MLflow, and
+selects the model with the lowest mean CV RMSE."""
 
 from __future__ import annotations
 
@@ -53,7 +46,7 @@ def select_model(
         mlflow.log_params({"cv_folds": cv_folds, "n_candidates": len(wanted)})
         for name in wanted:
             if name not in estimators:
-                logger.warning("Unknown candidate '%s' — skipping", name)
+                logger.warning("Unknown candidate '%s' - skipping", name)
                 continue
             model = build_model(estimators[name], numeric, categorical)
             # n_jobs=1: parallel folds reorder floating-point sums across workers, which

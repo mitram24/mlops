@@ -1,10 +1,6 @@
 """Nodes for the ``data_split`` pipeline.
 
-The course's bank-example pipeline split with a plain ``df.sample(frac=0.8)`` (see
-``split_data/nodes.py``). We use ``sklearn.model_selection.train_test_split`` instead, so
-the split ratio and seed are explicit parameters rather than hardcoded, and the row order
-isn't disturbed before the split.
-"""
+Splits the feature table into train and test partitions with an explicit ratio and seed."""
 
 from __future__ import annotations
 

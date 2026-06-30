@@ -13,9 +13,9 @@ studio could use it to flag rating errors before a release ships.
 2008 to 2016 across 11 European leagues. The relevant table is `Player_Attributes` (about 184k
 per-player FIFA snapshots, 33 skill ratings on a 0 to 100 scale plus `preferred_foot` and two
 work-rate fields), enriched with `height`, `weight` and `birthday` joined from the `Player`
-table. It is a good test bed because it is messy in the ways real data is: mixed dtypes, missing
-values that are sometimes structural and sometimes accidental, dirty categorical fields, a
-near-duplicate leakage column, and a time axis. The target itself stays clean and continuous.
+table. The data includes mixed dtypes, missing values, invalid categorical labels, a leakage-prone
+`potential` column, and dated snapshots. The target is numeric and usable after dropping rows
+where it is missing.
 
 The committed CSV is a deterministic 6,000-row sample, so the pipeline runs end to end in about
 two minutes and stays reproducible. `scripts/build_dataset.py` regenerates the table at any size
@@ -75,12 +75,12 @@ Five-fold cross-validation over four candidates (`model_selection_report.json`):
 | Linear Regression | 3.29 |
 | Ridge | 3.30 |
 
-The gap between the boosted trees (CV RMSE 1.59) and the linear baselines (3.29 to 3.30) shows
-that a rating depends on attribute interactions, not a weighted sum. Boosting also edges out the
-bagged Random Forest (1.59 vs 1.93): a small learning rate over many iterations keeps cutting bias
-on a smooth target. On the held-out test set the champion reaches RMSE 1.45, R2 0.954 and MAE 1.05.
+Boosted trees perform better than the linear baselines (CV RMSE 1.59 vs 3.29 to 3.30), which
+suggests that interactions between attributes matter. HistGradientBoosting also beats Random
+Forest on this sample (1.59 vs 1.93). On the held-out test set the champion reaches RMSE 1.45, R2 0.954 and MAE 1.05.
 
-An R2 of 0.954 sounds high for a held-out set, but it makes sense here: FIFA computes `overall_rating` from roughly the same attributes we give the model, so the trees are largely recovering a known scoring rule rather than discovering a hidden one. One thing does temper that number. The dataset holds 1.35 snapshots per player on average, so a plain random split can put the same player in both train and test. We check this directly below.
+The held-out R2 of 0.954 is high because `overall_rating` is derived from many of the same
+attributes used as inputs. The result should still be read with one caveat. The dataset holds 1.35 snapshots per player on average, so a plain random split can put the same player in both train and test. We check this directly below.
 
 ### 3.2.1 Robustness and validation
 
@@ -91,9 +91,11 @@ We re-split the data by player instead of by row (`GroupShuffleSplit` on `player
 | Random (shipped) | 1.45 | 0.954 | 86.8 |
 | Player-grouped | 1.54 | 0.950 | 84.2 |
 
-The cost of the leakage is small: RMSE rises from 1.45 to 1.54 and the within-2 rate falls from 86.8 to 84.2 percent, but every threshold from Section 1 still holds. We also went back through the correlation table looking for any other near-duplicate of the target; nothing else came close, `reactions` remains the strongest retained correlate. Residual and calibration plots in `notebooks/model_evaluation.ipynb` are unremarkable in a good way, residuals sit centred on zero, and binned predictions track the observed rating closely in the dense middle of the range. The learning curve there covers only the 6,000-row sample, so it tells us the sample is enough for this result, not that more data from the full 184k-row table would not help further.
+The cost of the leakage is small: RMSE rises from 1.45 to 1.54 and the within-2 rate falls from 86.8 to 84.2 percent, but every threshold from Section 1 still holds. We also went back through the correlation table looking for any other near-duplicate of the target; nothing else came close, `reactions` remains the strongest retained correlate. Residual and calibration plots in `notebooks/model_evaluation.ipynb` show residuals centred near zero, and binned predictions follow observed ratings closely in the dense middle of the range. The learning curve there covers only the 6,000-row sample, so it tells us the sample is enough for this result, not that more data from the full 184k-row table would not help further.
 
-We checked reproducibility by running the full DAG twice in a clean virtual environment: both runs complete green, `pytest` passes, and the metrics in `model_metrics.json` are bit-identical across runs (RMSE 1.4483 both times). Cross-validation and the Random Forest candidate originally used `n_jobs=-1`, which reorders floating-point sums across parallel workers and breaks exact reproducibility even with a fixed seed; we pinned `n_jobs=1` in `modeling.py` and `model_selection/nodes.py` so a fresh `kedro run` reproduces the same numbers, not just the same champion.
+We checked reproducibility by running the full DAG twice in a clean virtual environment. Both
+runs passed, `pytest` passed, and `model_metrics.json` matched exactly across runs (RMSE 1.4483
+both times). Cross-validation and the Random Forest candidate originally used `n_jobs=-1`, which reorders floating-point sums across parallel workers and breaks exact reproducibility even with a fixed seed; we pinned `n_jobs=1` in `modeling.py` and `model_selection/nodes.py` so a fresh `kedro run` reproduces the same numbers, not just the same champion.
 
 ### 3.3 Feature importance and explainability (SHAP)
 `model_train` computes SHAP values on the final model, saving `shap_summary.png` and `shap_bar.png`.
@@ -102,7 +104,9 @@ We checked reproducibility by running the full DAG twice in a clean virtual envi
 
 ### 3.4 Drift monitoring
 `data_drifts` compares a current batch against the training reference using PSI and the KS test
-per feature. The committed `drift_report.json` reflects a clean run with 1 of 48 features flagged, so `dataset_drift` is false. With 47 numeric KS tests at a 5% level, one flag is within expected false-positive noise. Flipping `drift.simulate_drift: true` injects a shift into a broad set of attributes, and 18 of the 48 features now trip the alarm, well past the threshold that marks `dataset_drift` true, committed as `drift_report_simulated.json`.
+per feature. The committed `drift_report.json` reflects a clean run with 1 of 48 features flagged, so `dataset_drift` is false. With 47 numeric KS tests at a 5% level, one flag is within expected false-positive noise. With `drift.simulate_drift: true`, the pipeline shifts a set of attributes. In that run, 18 of
+48 features are flagged, which is enough to set `dataset_drift` to true. The output is committed
+as `drift_report_simulated.json`.
 
 ## 4. From proof of concept to production
 
@@ -111,13 +115,16 @@ per feature. The committed `drift_report.json` reflects a clean run with 1 of 48
 | Compute (Pandas) | Simple, reproducible, zero infra | Single machine; the full table is about 184k rows and real feeds are larger | Port nodes to Spark or Dask (Kedro keeps the same node API), about 2 weeks |
 | Ingestion (CSV from SQLite) | One script, transparent | Manual, point-in-time snapshot | Scheduled extract into a warehouse table, about 3 days |
 | Orchestration (Kedro CLI) | Modular, testable, layered catalog | No scheduling or retries | Deploy to Airflow or Kubeflow via `kedro-airflow`, about 1 week |
-| Tracking (MLflow, SQLite) | Free local versioning and registry | Not multi-user, no auth | Hosted MLflow server with S3/DB backend, about 3 days |
+| Tracking (MLflow, SQLite) | Free local versioning and registry | Single-user, no auth | Hosted MLflow server with S3/DB backend, about 3 days |
 | Feature store (parquet `04_feature`) | Lightweight offline store | No online or low-latency serving, no point-in-time joins | Adopt Feast or Hopsworks for an online store, about 2 weeks |
 | Serving (FastAPI + Docker) | Standard, language-agnostic REST | Manual scaling | Kubernetes with autoscaling, or MLflow Model Serving, about 1 week |
 | Drift (PSI/KS + Evidently) | Interpretable, dependency-light | Batch only, heuristic thresholds | Scheduled monitoring job with alerting, auto-trigger retrain, about 1 week |
 | Data quality (custom asserts) | No heavy dependency, fast | Hand-maintained | Migrate to Great Expectations suites in CI, about 3 days |
 
-Dropping `potential` handles offline leakage. In production, a feature store with CI checks is required to enforce this constraint against live data. The drift monitor currently checks only input distributions, offering no visibility into prediction drift or concept drift. Additionally, the system lacks a CI/CD retrain trigger tied to labelled feedback.
+Dropping `potential` removes the main leakage risk in this dataset. A production system should
+also block that feature in CI or feature-store checks. The current drift monitor checks only input
+distributions, so it does not detect prediction drift or concept drift. Retraining is also not yet
+triggered from labelled feedback.
 
 Reproducibility comes from a single random seed (`parameters.yml`), pinned dependencies
 (`requirements.txt` and `requirements-lock.txt`), single-threaded model fitting, and persisted

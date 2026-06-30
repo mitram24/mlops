@@ -1,16 +1,15 @@
 # mlops_player_rating
 
-A proof-of-concept MLOps pipeline built for the NOVA IMS MLOps course. It predicts a football player's FIFA overall rating from in-game attributes using the [European Soccer Database](https://www.kaggle.com/datasets/hugomathien/soccer) (184k snapshots). Built with Kedro for modular orchestration, it includes data-quality gating, MLflow tracking, SHAP explainability, a FastAPI/Docker serving layer, and PSI/KS data-drift monitoring.
+This NOVA IMS MLOps project predicts a football player's FIFA overall rating from in-game attributes in the [European Soccer Database](https://www.kaggle.com/datasets/hugomathien/soccer) (184k snapshots). The project uses Kedro pipelines for data checks, cleaning, feature engineering, model selection, training, batch prediction and drift checks. It also includes MLflow tracking, SHAP outputs, and a FastAPI service packaged with Docker.
 
-> It simulates the real workflow of shipping an ML model: every stage is an independent,
-> reproducible pipeline that can run end to end or on its own (for example, only `data_drifts`
-> once the model is already in production).
+> Each stage can run as part of the full Kedro DAG or on its own. For example, `data_drifts`
+> can run against a new batch without retraining the model.
 
 ### See the results without running anything
 
 Pre-generated outputs are committed directly to the repo:
 Metrics in `data/08_reporting/model_metrics.json` show RMSE 1.45, R2 0.954, and MAPE 1.57 %, with 86.8 % of predictions within +/- 2 points. `model_selection_report.json` covers the 5-fold CV that picked HistGradientBoosting.
-SHAP plots (`shap_summary.png`, `shap_bar.png`) and the drift reports (`drift_report.json`, `evidently_drift_report.html`) are in the reporting folder. The trained artifact itself is at `data/06_models/champion_model.pkl`, meaning the FastAPI container can be spun up immediately. Batch predictions against actuals are available in `data/07_model_output/predictions.csv`. `MODEL_CARD.md` contains the full technical write-up.
+SHAP plots (`shap_summary.png`, `shap_bar.png`) and the drift reports (`drift_report.json`, `evidently_drift_report.html`) are in the reporting folder. The trained artifact is at `data/06_models/champion_model.pkl`, so the FastAPI container can serve it directly. Batch predictions against actuals are available in `data/07_model_output/predictions.csv`. `MODEL_CARD.md` contains the full technical write-up.
 
 ## 1. Pipeline architecture
 
@@ -114,9 +113,9 @@ curl -X POST http://localhost:8000/predict \
                     "date": "2016-01-01", "birthday": "1987-06-24"}]}'
 ```
 
-The API runs the same cleaning and feature engineering used in training, so there is no
-train/serve skew. The batch `model_predict` pipeline scores raw players and lands within about
-1 to 2 rating points of the truth (see `data/07_model_output/predictions.csv`).
+The API uses the same cleaning and feature engineering path as training. The batch
+`model_predict` pipeline scores raw players and is usually within 1 to 2 rating points
+of the actual value (see `data/07_model_output/predictions.csv`).
 
 ## 6. Tests
 

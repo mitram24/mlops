@@ -1,16 +1,11 @@
 """Nodes for the ``data_quality`` pipeline.
 
-This is the project's first line of defence: a battery of *asserts* over the raw data
-(schema, types, ranges, uniqueness, missingness). Critical failures stop the pipeline
-before any compute is spent training on bad data; soft failures are recorded as
-warnings in a JSON report that lands in ``data/08_reporting``.
+Validates the raw table for schema, types, ranges, ids, duplicates and missing values.
+Critical failures stop the pipeline. Warning-level failures are kept in a JSON report
+under ``data/08_reporting``.
 
-Week 1 of the course taught data validation through Great Expectations
-(``01_Data_Unit_Tests.ipynb``). We validate the same kinds of things (schema, ranges,
-nulls) but with plain Python asserts instead of the GX framework, a lighter dependency
-footprint that suits a single-table proof of concept; the brief explicitly allows
-"one of the tools from class or your own solution".
-"""
+The checks cover the same validation topics as the course material, implemented with
+plain Python assertions for this single-table project."""
 
 from __future__ import annotations
 

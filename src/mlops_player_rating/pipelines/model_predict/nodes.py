@@ -1,10 +1,7 @@
-"""Nodes for the ``model_predict`` pipeline (offline / batch scoring).
+"""Nodes for the ``model_predict`` pipeline.
 
-Same batch-scoring shape as the course's bank-example ``model_predict/nodes.py``
-(``model.predict`` over a raw feature table). We add an ``abs_error`` column when the
-target happens to be present in the input, useful for sanity-checking a batch against
-ground truth without changing the scoring path itself.
-"""
+Scores raw player snapshots with the same preprocessing path used by the serving API.
+If the target is present, the output also includes absolute error for batch checks."""
 
 from __future__ import annotations
 
@@ -23,11 +20,10 @@ def predict(
     raw_inference: pd.DataFrame,
     serving_metadata: dict,
 ) -> pd.DataFrame:
-    """Score a batch of *raw* player snapshots with the trained model.
+    """Score raw player snapshots with the trained model.
 
-    Goes through the same ``preprocess_for_inference`` path as the online API, proving
-    offline/online parity. If the input carries the ground-truth ``overall_rating`` the
-    absolute error is reported too.
+    Uses ``preprocess_for_inference``, the same path called by the API. If the input
+    includes ``overall_rating``, the output also reports absolute error.
     """
     raw = raw_inference.copy()
     id_col = next((c for c in raw.columns if normalize_name(c) == "id"), None)

@@ -1,11 +1,7 @@
 """Nodes for the ``data_feat_engeneering`` pipeline.
 
-The course's bank-example preprocessing pipeline binned and one-hot-encoded generic
-banking fields (age brackets, campaign counts). Here the engineered columns are specific
-to the FIFA domain (age, BMI, the seven skill-group means, the goalkeeper flag) and the
-metadata this pipeline emits doubles as the offline feature store described in the
-report.
-"""
+Adds FIFA-specific features such as age, BMI, skill-group means and the goalkeeper flag.
+The emitted metadata documents the offline feature table used by training and serving."""
 
 from __future__ import annotations
 
