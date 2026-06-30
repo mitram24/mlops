@@ -8,10 +8,6 @@ version = "0.1.0"
 description = "MLOps proof-of-concept: FIFA player overall-rating prediction on the European Soccer Database (Kedro)."
 readme = "README.md"
 requires-python = ">=3.9"
-dynamic = ["dependencies"]
-
-[tool.setuptools.dynamic]
-dependencies = { file = ["requirements.txt"] }
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -44,7 +40,6 @@ line-length = 100
 [tool.kedro_telemetry]
 project_id = "d8a19f7946d44887addb006f53c4bc4d"
 
-[project]
 dependencies = [
   "kedro>=0.19.10,<0.20",
   "kedro-datasets[pandas-csvdataset,pandas-parquetdataset,json-jsondataset,pickle-pickledataset]>=4.1.0",
