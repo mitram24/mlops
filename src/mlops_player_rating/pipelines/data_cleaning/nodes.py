@@ -14,9 +14,7 @@ from mlops_player_rating.core.utils import (
     ID_COLUMNS,
     SKILL_COLUMNS,
     TARGET,
-    apply_attribute_imputer,
     apply_value_semantics,
-    fit_attribute_imputer,
 )
 
 logger = logging.getLogger(__name__)
@@ -24,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 def clean_data(
     ingested: pd.DataFrame, params: dict[str, Any]
-) -> tuple[pd.DataFrame, dict[str, Any]]:
+) -> pd.DataFrame:
     """Clean work-rate values, drop unusable rows and impute missing skill ratings.
 
     Returns:
@@ -48,14 +46,10 @@ def clean_data(
         df = df[skill_missing <= max_missing].reset_index(drop=True)
         logger.info("Dropped %d rows with > %.0f%% missing skills", before - len(df), max_missing * 100)
 
-    # Fit + apply the per-attribute median imputer, and keep it as a feature-store artefact.
-    medians = fit_attribute_imputer(df)
-    df = apply_attribute_imputer(df, medians)
-    attribute_imputer = {"attribute_medians": medians}
 
-    # Identifier columns carry no signal and risk leakage - drop them.
-    df = df.drop(columns=[c for c in ID_COLUMNS if c in df.columns])
+
+
 
     n_missing = int(df.isna().sum().sum())
     logger.info("Cleaned table: %d rows x %d cols, %d residual NaNs", *df.shape, n_missing)
-    return df, attribute_imputer
+    return df
